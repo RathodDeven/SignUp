@@ -1,0 +1,9 @@
+query GetAttestation($where: AttestationWhereUniqueInput!) {
+  getAttestation(where: $where) {
+    attester
+    time
+    decodedDataJson
+    id
+    schemaId
+  }
+}

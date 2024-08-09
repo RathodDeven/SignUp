@@ -4,15 +4,20 @@ import React from 'react'
 
 import '@rainbow-me/rainbowkit/styles.css'
 
-import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import {
+  darkTheme,
+  getDefaultConfig,
+  RainbowKitProvider
+} from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
-import { mainnet, polygon, optimism, arbitrum, base, zora } from 'wagmi/chains'
+import { optimismSepolia, baseSepolia } from 'wagmi/chains'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { APP_NAME } from '../../utils/config'
 
 const config = getDefaultConfig({
-  appName: 'My RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, polygon, optimism, arbitrum, base, zora],
+  appName: APP_NAME,
+  projectId: String(process.env.NEXT_PUBLIC_RAINBOW_KIT_PROJECT_ID),
+  chains: [optimismSepolia, baseSepolia],
   ssr: true // If your dApp uses server side rendering (SSR)
 })
 
@@ -22,7 +27,7 @@ const RainbowKitWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        <RainbowKitProvider theme={darkTheme()}>{children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   )

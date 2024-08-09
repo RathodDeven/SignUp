@@ -2,24 +2,30 @@
 
 import EventTile from '@/components/EventTile/EventTile'
 import { useAttestationsQuery } from '@/generated'
+import { ATTENDING_EVENT_SCHEMA } from '@/utils/config'
 import { decodedDataToEvent } from '@/utils/helpers'
-import useInfoBasedOnChain from '../utils/hooks/useInfoBasedOnChain'
+import React from 'react'
+import { useAccount } from 'wagmi'
 
-export default function Home() {
-  const { CREATING_EVENT_SCHEMA_UID } = useInfoBasedOnChain()
+const SignedUpEventPage = () => {
+  const { address } = useAccount()
+
   const { data } = useAttestationsQuery({
     variables: {
       where: {
-        schemaId: {
-          equals: CREATING_EVENT_SCHEMA_UID
+        schema: {
+          is: {
+            schema: {
+              equals: ATTENDING_EVENT_SCHEMA
+            }
+          }
         }
       }
     }
   })
-
   return (
     <div>
-      <div className="text-p-text text-2xl font-bold">Sign Ups</div>
+      <div className="text-p-text text-2xl font-bold">Signed Up</div>
 
       {data?.attestations.map((attestation) => {
         const eventInfo = decodedDataToEvent(attestation.decodedDataJson)
@@ -37,3 +43,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default SignedUpEventPage
