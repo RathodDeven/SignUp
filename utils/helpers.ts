@@ -8,6 +8,9 @@ export function shortenString(str: string, num: number): string {
   }
 }
 
+export const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms))
+
 export const isValidURL = (text: string): boolean => {
   const urlPattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol
@@ -33,4 +36,31 @@ export function decodedDataToEvent(
   }, {})
 
   return eventInfo
+}
+
+export function decodedData(
+  decodedDataJson: string | undefined
+): Record<string, string> {
+  if (!decodedDataJson) return {}
+  const eventInfoArray = JSON.parse(decodedDataJson)
+
+  return eventInfoArray.reduce((acc: any, curr: any) => {
+    acc[curr.name] = curr.value.value
+    return acc
+  }, {})
+}
+
+export function timeAgo(time: number): string {
+  const now = Math.floor(Date.now() / 1000)
+  const diff = now - time
+
+  if (diff < 60) {
+    return 'just now'
+  } else if (diff < 3600) {
+    return `${Math.floor(diff / 60)}m ago`
+  } else if (diff < 86400) {
+    return `${Math.floor(diff / 3600)}h ago`
+  } else {
+    return `${Math.floor(diff / 86400)}d ago`
+  }
 }

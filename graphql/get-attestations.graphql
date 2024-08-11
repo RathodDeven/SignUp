@@ -1,9 +1,13 @@
-query Attestations($where: AttestationWhereInput) {
-  attestations(where: $where) {
+query Attestations(
+  $where: AttestationWhereInput
+  $orderBy: [AttestationOrderByWithRelationInput!]
+) {
+  attestations(where: $where, orderBy: $orderBy) {
     attester
     time
     decodedDataJson
     id
     schemaId
+    refUID
   }
 }

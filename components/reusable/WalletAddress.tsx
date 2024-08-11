@@ -8,15 +8,17 @@ import toast from 'react-hot-toast'
 const WalletAddress = ({
   walletAdderss,
   showShort = true,
-  showLinkToExplorer = true
+  showLinkToExplorer = true,
+  className = ''
 }: {
   walletAdderss: string
   showShort?: boolean
   showLinkToExplorer?: boolean
+  className?: string
 }) => {
   const { EXPLORER_URL } = useInfoBasedOnChain()
   return (
-    <span>
+    <span className={className}>
       {showLinkToExplorer ? (
         <Link
           href={`${EXPLORER_URL}/address/${walletAdderss}`}

@@ -1,7 +1,7 @@
 'use client'
 
 import EventTile from '@/components/EventTile/EventTile'
-import { useAttestationsQuery } from '@/generated'
+import { SortOrder, useAttestationsQuery } from '@/generated'
 import { decodedDataToEvent } from '@/utils/helpers'
 import useInfoBasedOnChain from '../utils/hooks/useInfoBasedOnChain'
 
@@ -13,6 +13,9 @@ export default function Home() {
         schemaId: {
           equals: CREATING_EVENT_SCHEMA_UID
         }
+      },
+      orderBy: {
+        timeCreated: SortOrder.Desc
       }
     }
   })

@@ -22,6 +22,8 @@ import { EventType } from '../../utils/types'
 import { useEthersSigner } from '../../utils/hooks/useEthersSigner'
 import { ethers } from 'ethers'
 import useInfoBasedOnChain from '../../utils/hooks/useInfoBasedOnChain'
+import { useRouter } from 'next/navigation'
+import { sleep } from '../../utils/helpers'
 
 export default function CreateEventPage() {
   const signer = useEthersSigner()
@@ -30,6 +32,8 @@ export default function CreateEventPage() {
     CREATING_EVENT_SCHEMA_UID,
     EAS_CONTRACT_ADDRESS
   } = useInfoBasedOnChain()
+
+  const { push } = useRouter()
   const [isTimeLimited, setIsTimeLimited] = useState(false)
   const startDateInputRef = useRef<HTMLInputElement>(null)
   const startTimeInputRef = useRef<HTMLInputElement>(null)
@@ -264,14 +268,11 @@ export default function CreateEventPage() {
 
     const schemaUID = CREATING_EVENT_SCHEMA_UID
 
-    const expirationTime = eventInfo.end ? BigInt(eventInfo.end) : BigInt(0)
-
     const tx = await eas.attest({
       schema: schemaUID,
       data: {
         recipient: ZERO_ADDRESS,
         data: encodedData,
-        expirationTime: expirationTime,
         revocable: true
       }
     })
@@ -384,7 +385,10 @@ export default function CreateEventPage() {
 
       console.log('newAttestationUID', newAttestationUID)
 
+      await sleep(5000)
+
       // redirect to event page with attestation uid
+      push(`/signup/${newAttestationUID}`)
     } catch (error) {
       toast.error(String(error).replace('Error:', ''))
 

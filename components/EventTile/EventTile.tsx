@@ -60,6 +60,7 @@ const EventTile = ({
                 src={getStampFyiURL(hostedByAddr)}
                 width={20}
                 height={20}
+                className="rounded-full"
                 alt={'hosted by image'}
               />
               <span className="pl-2">By {shortenString(hostedByAddr, 6)}</span>

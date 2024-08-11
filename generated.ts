@@ -2789,11 +2789,16 @@ export type GetAttestationQuery = {
     decodedDataJson: string
     id: string
     schemaId: string
+    refUID: string
   } | null
 }
 
 export type AttestationsQueryVariables = Exact<{
   where?: InputMaybe<AttestationWhereInput>
+  orderBy?: InputMaybe<
+    | Array<AttestationOrderByWithRelationInput>
+    | AttestationOrderByWithRelationInput
+  >
 }>
 
 export type AttestationsQuery = {
@@ -2805,6 +2810,7 @@ export type AttestationsQuery = {
     decodedDataJson: string
     id: string
     schemaId: string
+    refUID: string
   }>
 }
 
@@ -2816,6 +2822,7 @@ export const GetAttestationDocument = gql`
       decodedDataJson
       id
       schemaId
+      refUID
     }
   }
 `
@@ -2890,13 +2897,17 @@ export type GetAttestationQueryResult = Apollo.QueryResult<
   GetAttestationQueryVariables
 >
 export const AttestationsDocument = gql`
-  query Attestations($where: AttestationWhereInput) {
-    attestations(where: $where) {
+  query Attestations(
+    $where: AttestationWhereInput
+    $orderBy: [AttestationOrderByWithRelationInput!]
+  ) {
+    attestations(where: $where, orderBy: $orderBy) {
       attester
       time
       decodedDataJson
       id
       schemaId
+      refUID
     }
   }
 `
@@ -2914,6 +2925,7 @@ export const AttestationsDocument = gql`
  * const { data, loading, error } = useAttestationsQuery({
  *   variables: {
  *      where: // value for 'where'
+ *      orderBy: // value for 'orderBy'
  *   },
  * });
  */
