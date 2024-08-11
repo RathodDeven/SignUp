@@ -2,9 +2,9 @@
 
 ### Easily Create sign-ups for events, voting, IRL proofs, early access sign-ups—literally anything—with the ability to limit how many can sign up, add a price, and set start and end times.
 
-This project is built with careful attention to the UI and provides proof for each step. No custom backend APIs are involved; everything is handled on EAS and accessed via corresponding GraphQL APIs. This means it cannot be taken down, and every step is open for anyone to verify.
+It is built with careful attention to the UI and provides proof for each step. No custom backend APIs are involved; everything is handled on EAS and accessed via corresponding GraphQL APIs. This means it cannot be taken down, and every step is open for anyone to verify.
 
-This project is currently deployed on both the `Optimism Sepolia` and `Base Sepolia` testnets, and it works seamlessly when switching between chain networks.
+it is currently deployed on both the `Optimism Sepolia` and `Base Sepolia` testnets, and it works seamlessly when switching between chain networks.
 
 ```
 export const OpTestnet = {
