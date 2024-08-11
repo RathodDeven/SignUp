@@ -1,3 +1,5 @@
+import { BigNumberish } from 'ethers'
+
 export type EventType = {
   name: string
   location: string
@@ -8,6 +10,6 @@ export type EventType = {
   start: number
   end: number
   capacity: number
-  price: string
+  price: BigNumberish
   eventInfoUrl: string
 }

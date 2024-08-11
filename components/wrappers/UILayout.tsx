@@ -20,7 +20,7 @@ const inter = Inter({ subsets: ['latin'] })
 const UILayout: React.FC<Props> = (props) => {
   // Define the component's logic and rendering here
   return (
-    <div className={clsx(inter.className, 'bg-p-bg text-s-text')}>
+    <div className={clsx(inter.className, 'bg-p-bg text-s-text ')}>
       <div className="absolute inset-0">
         <img
           src="/bg-image.jpeg"

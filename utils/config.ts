@@ -19,7 +19,8 @@ export const OpTestnet = {
   SCHEMA_REGISTRY: '0x4200000000000000000000000000000000000020',
   SIMPLE_ATTENDING_EVENT_SCHEMA_UID:
     '0x217e3a8347fb5b8fb67c500197182bf21b2c877f9ff22fb212000ba914079731',
-  GRAPHQL_API: 'https://optimism-sepolia.easscan.org/graphql'
+  GRAPHQL_API: 'https://optimism-sepolia.easscan.org/graphql',
+  EXPLORER_URL: 'https://sepolia-optimism.etherscan.io'
 }
 
 export const BaseTestnet = {
@@ -27,5 +28,6 @@ export const BaseTestnet = {
   EAS_CONTRACT_ADDRESS: '0x4200000000000000000000000000000000000021',
   SCHEMA_REGISTRY: '0x4200000000000000000000000000000000000020',
   SIMPLE_ATTENDING_EVENT_SCHEMA_UID: '',
-  GRAPHQL_API: 'https://base-sepolia.easscan.org/graphql'
+  GRAPHQL_API: 'https://base-sepolia.easscan.org/graphql',
+  EXPLORER_URL: 'https://sepolia.basescan.org/'
 }
