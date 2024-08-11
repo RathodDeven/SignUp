@@ -139,7 +139,7 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
       <div className="p-4 bg-p-bg/50 backdrop-opacity-10  backdrop-blur-xl rounded-xl shadow-2xl">
         <img
           alt="banner"
-          className="w-full h-[370px] rounded-xl mb-4"
+          className="w-full h-[370px] rounded-xl mb-4 object-cover"
           src={getIPFSLink(eventInfo.banner)}
         />
 
@@ -197,17 +197,18 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
                 <IoTimeOutline className="text-s-text/40 text-2xl " />
               </div>
               <div className="text-s-text font-semibold">
-                {eventInfo.start && (
+                {Boolean(eventInfo.start) && (
                   <div className="flex flex-row items-center">
                     <span>
-                      Start: {new Date(eventInfo.start * 1000).toLocaleString()}
+                      Starts at{' '}
+                      {new Date(eventInfo.start * 1000).toLocaleString()}
                     </span>
                   </div>
                 )}
-                {eventInfo.end && (
+                {Boolean(eventInfo.end) && (
                   <div className="flex flex-row items-center">
                     <span>
-                      End: {new Date(eventInfo.end * 1000).toLocaleString()}
+                      Ends at {new Date(eventInfo.end * 1000).toLocaleString()}
                     </span>
                   </div>
                 )}
@@ -272,6 +273,34 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
               </div>
               <div className="text-p-text font-bold text-2xl">
                 Event capacity Reached
+              </div>
+            </div>
+          ) : Boolean(eventInfo?.start) &&
+            new Date(eventInfo.start * 1000) > new Date() ? (
+            <div className="bg-s-bg transition-all cursor-pointer rounded-xl px-4 py-3 center-row">
+              <div className="-mb-1 mr-3">
+                <img
+                  src="/Logo_Without_Text.svg"
+                  alt="logo"
+                  className="w-8 h-8"
+                />
+              </div>
+              <div className="text-p-text font-bold text-2xl">
+                Event has not started yet
+              </div>
+            </div>
+          ) : Boolean(eventInfo?.end) &&
+            new Date(eventInfo.end * 1000) < new Date() ? (
+            <div className="bg-s-bg transition-all cursor-pointer rounded-xl px-4 py-3 center-row">
+              <div className="-mb-1 mr-3">
+                <img
+                  src="/Logo_Without_Text.svg"
+                  alt="logo"
+                  className="w-8 h-8"
+                />
+              </div>
+              <div className="text-p-text font-bold text-2xl">
+                Event has already ended
               </div>
             </div>
           ) : (

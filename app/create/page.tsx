@@ -327,7 +327,7 @@ export default function CreateEventPage() {
             throw new Error('Event must be starting in the future')
           }
 
-          eventInfo.start = startEpoch
+          eventInfo.start = startEpoch / 1000
         }
 
         if (endDate && endTime) {
@@ -343,7 +343,7 @@ export default function CreateEventPage() {
             )
           }
 
-          eventInfo.end = endEpoch
+          eventInfo.end = endEpoch / 1000
         }
       }
 
