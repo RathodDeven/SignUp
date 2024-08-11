@@ -25,11 +25,13 @@ export const OpTestnet = {
 }
 
 export const BaseTestnet = {
-  CREATING_EVENT_SCHEMA_UID: '',
+  CREATING_EVENT_SCHEMA_UID:
+    '0xea04ca817cd403d7ef3ff95541a85d10d4bcfa68498503f09696b698e5100114',
   EAS_CONTRACT_ADDRESS: '0x4200000000000000000000000000000000000021',
   SCHEMA_REGISTRY: '0x4200000000000000000000000000000000000020',
-  SIMPLE_ATTENDING_EVENT_SCHEMA_UID: '',
+  SIMPLE_ATTENDING_EVENT_SCHEMA_UID:
+    '0xa7435e2d17139baccfa4facc6ff1f2f4118f4edcd7818dd415f0aa80ffad51ee',
   GRAPHQL_API: 'https://base-sepolia.easscan.org/graphql',
-  EXPLORER_URL: 'https://sepolia.basescan.org/',
-  EAS_EXPLORER_URL: 'https://base-sepolia.easscan.org/'
+  EXPLORER_URL: 'https://sepolia.basescan.org',
+  EAS_EXPLORER_URL: 'https://base-sepolia.easscan.org'
 }

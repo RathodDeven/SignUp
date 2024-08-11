@@ -9,7 +9,11 @@ import { FaSignature } from 'react-icons/fa'
 
 import { HiOutlineLocationMarker } from 'react-icons/hi'
 import { FaRegImage } from 'react-icons/fa'
-import { CREATING_EVENT_SCHEMA, DEFAULT_BANNER } from '@/utils/config'
+import {
+  ATTENDING_EVENT_SCHEMA,
+  CREATING_EVENT_SCHEMA,
+  DEFAULT_BANNER
+} from '@/utils/config'
 import getIPFSLink from '@/utils/getIPFSLink'
 import {
   EAS,
@@ -24,13 +28,16 @@ import { ethers } from 'ethers'
 import useInfoBasedOnChain from '../../utils/hooks/useInfoBasedOnChain'
 import { useRouter } from 'next/navigation'
 import { sleep } from '../../utils/helpers'
+import { EventResolverAbi } from '../../utils/contracts/eventResolverAbi'
+import { EventResolverByteCode } from '../../utils/contracts/EventResolverByteCode'
 
 export default function CreateEventPage() {
   const signer = useEthersSigner()
   const {
     SIMPLE_ATTENDING_EVENT_SCHEMA_UID,
     CREATING_EVENT_SCHEMA_UID,
-    EAS_CONTRACT_ADDRESS
+    EAS_CONTRACT_ADDRESS,
+    SCHEMA_REGISTRY
   } = useInfoBasedOnChain()
 
   const { push } = useRouter()
@@ -94,51 +101,50 @@ export default function CreateEventPage() {
     }
   }
 
-  // const getResolverAddress = async (eventInfo: EventType): Promise<string> => {
-  //   const initialMaxTickerCount = eventInfo.capacity || 0
-  //   const initialPrice = eventInfo.price || '0'
-  //   const initialStart = eventInfo.start || 0
-  //   const initialEnd = eventInfo.end || 0
-  //   const factory = new ethers.ContractFactory(
-  //     eventResolverAbi,
-  //     eventResolverByteCode,
-  //     // @ts-ignore
-  //     signer
-  //   )
+  const getResolverAddress = async (eventInfo: EventType): Promise<string> => {
+    const initialMaxTickerCount = eventInfo.capacity || 0
+    const initialPrice = eventInfo.price || '0'
+    const initialStart = eventInfo.start || 0
+    const initialEnd = eventInfo.end || 0
+    const factory = new ethers.ContractFactory(
+      EventResolverAbi,
+      EventResolverByteCode,
+      signer
+    )
 
-  //   const contract = await factory.deploy(
-  //     ATTESTATION_ADDRESS,
-  //     initialMaxTickerCount,
-  //     initialPrice,
-  //     initialStart,
-  //     initialEnd
-  //   )
+    const contract = await factory.deploy(
+      EAS_CONTRACT_ADDRESS,
+      initialMaxTickerCount,
+      initialPrice,
+      initialStart,
+      initialEnd
+    )
 
-  //   await contract.deployed()
+    const tx = await contract.waitForDeployment()
 
-  //   return contract.address
-  // }
+    return String(tx.target)
+  }
 
-  // const registerAndGetSchemaId = async (
-  //   resolverAddress: string
-  // ): Promise<string> => {
-  //   const schemaRegistry = new SchemaRegistry(SCHEMEA_REGISTRY_ADDRESS)
-  //   // @ts-ignore
-  //   schemaRegistry.connect(signer)
+  const registerAndGetSchemaId = async (
+    resolverAddress: string
+  ): Promise<string> => {
+    const schemaRegistry = new SchemaRegistry(SCHEMA_REGISTRY)
+    // @ts-ignore
+    schemaRegistry.connect(signer)
 
-  //   const schema = ATTENDING_EVENT_SCHEMA
-  //   const revocable = true
+    const schema = ATTENDING_EVENT_SCHEMA
+    const revocable = true
 
-  //   const transaction = await schemaRegistry.register({
-  //     schema,
-  //     resolverAddress,
-  //     revocable
-  //   })
+    const transaction = await schemaRegistry.register({
+      schema,
+      resolverAddress,
+      revocable
+    })
 
-  //   const schemaUid = await transaction.wait()
+    const schemaUid = await transaction.wait()
 
-  //   return schemaUid
-  // }
+    return schemaUid
+  }
 
   const getSchemaId = async (eventInfo: EventType): Promise<string> => {
     try {
@@ -146,34 +152,32 @@ export default function CreateEventPage() {
         !eventInfo.start &&
         !eventInfo.end &&
         !eventInfo.capacity &&
-        eventInfo.price === '0'
+        eventInfo.price === 0
       ) {
         return SIMPLE_ATTENDING_EVENT_SCHEMA_UID
       }
 
-      return SIMPLE_ATTENDING_EVENT_SCHEMA_UID
+      const resolverAddress = await toast.promise(
+        getResolverAddress(eventInfo),
+        {
+          loading: 'Deploying Resolver Contract',
+          success: 'Resolver Contract Deployed',
+          error: 'Error deploying Resolver Contract'
+        }
+      )
+      if (!resolverAddress) {
+        throw new Error('Resolver address is required')
+      }
 
-      // const resolverAddress = await toast.promise(
-      //   getResolverAddress(eventInfo),
-      //   {
-      //     loading: 'Deploying Resolver Contract',
-      //     success: 'Resolver Contract Deployed',
-      //     error: 'Error deploying Resolver Contract'
-      //   }
-      // )
-      // if (!resolverAddress) {
-      //   throw new Error('Resolver address is required')
-      // }
-
-      // const schemaUid = await toast.promise(
-      //   registerAndGetSchemaId(resolverAddress),
-      //   {
-      //     loading: 'Registering Schema',
-      //     success: 'Schema Registered',
-      //     error: 'Error registering Schema'
-      //   }
-      // )
-      // return schemaUid
+      const schemaUid = await toast.promise(
+        registerAndGetSchemaId(resolverAddress),
+        {
+          loading: 'Registering Schema',
+          success: 'Schema Registered',
+          error: 'Error registering Schema'
+        }
+      )
+      return schemaUid
     } catch (error) {
       toast.error(String(error))
       console.log(error)
@@ -299,8 +303,8 @@ export default function CreateEventPage() {
         start: 0,
         capacity: 0,
         end: 0,
-        eventInfoUrl: '',
-        price: '0'
+        eventInfoUrl: '0',
+        price: 0
       }
 
       // get start and end inputs
@@ -351,16 +355,16 @@ export default function CreateEventPage() {
         // convert price which is in eth to uint256
         const priceInUint = ethers.parseEther(price).toString()
         console.log('priceInUint', priceInUint)
-        eventInfo.price = priceInUint
+        eventInfo.price = Number(priceInUint)
       }
 
       console.log('eventInfo', eventInfo)
 
       const schemaId = await getSchemaId(eventInfo)
 
-      eventInfo.schemaId = schemaId
+      console.log('schemaId', schemaId)
 
-      console.log('eventInfo', eventInfo)
+      eventInfo.schemaId = schemaId
 
       // const ipfsUrl = await getIpfsUrlOfEvent(eventInfo);
 

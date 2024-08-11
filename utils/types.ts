@@ -10,6 +10,6 @@ export type EventType = {
   start: number
   end: number
   capacity: number
-  price: BigNumberish
+  price: number
   eventInfoUrl: string
 }

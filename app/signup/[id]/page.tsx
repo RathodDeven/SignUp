@@ -75,14 +75,6 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
 
   const isAttending = Boolean(myAttestation)
 
-  console.log('attendingAttestations', attendingAttestations)
-
-  console.log('myAttestation', myAttestation)
-
-  console.log('eventInfo', eventInfo)
-  // @ts-ignore
-  console.log('eventInfo?.price', eventInfo?.price?.hex)
-
   if (!data || !eventInfo)
     return <div className="text-s-text font-bold">Loading...</div>
 
@@ -90,8 +82,6 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
     ? // @ts-ignore
       ethers.formatEther(toBigInt(eventInfo.price?.hex))
     : '0'
-
-  console.log('priceInEther', priceInEther)
 
   const attestAttendingEvent = async () => {
     const eas = new EAS(EAS_CONTRACT_ADDRESS)
@@ -111,35 +101,30 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
     // to what schema we are attesting is added to the event data as well, because schema may be different in case of prices, capacity and date ranges events
     const schemaUID = eventInfo.schemaId
 
-    const tx = await toast.promise(
-      eas.attest({
-        data: {
-          recipient: data?.getAttestation?.attester!,
-          data: encodedData,
-          refUID: data?.getAttestation?.id,
-          revocable: false,
-          // @ts-ignore
-          value:
-            // @ts-ignore
-            toBigInt(eventInfo.price?.hex) !== BigInt(0)
-              ? // @ts-ignore
-                toBigInt(eventInfo.price?.hex)
-              : undefined
-        },
-        schema: schemaUID
-      }),
-      {
-        loading: 'Loading Attestation...',
-        success: 'Attested Loaded',
-        error: 'Error loading attestation'
-      }
+    console.log(
+      'toBigInt(eventInfo.price?.hex) !== BigInt(0)',
+      // @ts-ignore
+      toBigInt(eventInfo.price?.hex) !== BigInt(0)
     )
 
-    await toast.promise(tx.wait(), {
-      loading: 'Attesting...',
-      success: 'Attested successfully',
-      error: 'Error attesting'
+    const tx = await eas.attest({
+      data: {
+        recipient: data?.getAttestation?.attester!,
+        data: encodedData,
+        refUID: data?.getAttestation?.id,
+        revocable: false,
+        // @ts-ignore
+        value:
+          // @ts-ignore
+          toBigInt(eventInfo.price?.hex) !== BigInt(0)
+            ? // @ts-ignore
+              toBigInt(eventInfo.price?.hex)
+            : undefined
+      },
+      schema: schemaUID
     })
+
+    await tx.wait()
 
     await sleep(5000)
 
@@ -161,8 +146,8 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
         <div className="flex flex-col gap-y-2 p-4 space-y-2">
           <div className="text-2xl text-p-text font-bold">{eventInfo.name}</div>
 
-          {eventInfo.description && (
-            <Markup className="text-xl text-s-text font-semibold">
+          {eventInfo.description && eventInfo.description !== 'void' && (
+            <Markup className="text-lg text-s-text">
               {eventInfo.description}
             </Markup>
           )}
@@ -274,9 +259,30 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
                 You are Signed Up for this 🎉
               </div>
             </div>
+          ) : attendingAttestations &&
+            !!eventInfo.capacity &&
+            attendingAttestations?.attestations.length >= eventInfo.capacity ? (
+            <div className="bg-s-bg transition-all cursor-pointer rounded-xl px-4 py-3 center-row">
+              <div className="-mb-1 mr-3">
+                <img
+                  src="/Logo_Without_Text.svg"
+                  alt="logo"
+                  className="w-8 h-8"
+                />
+              </div>
+              <div className="text-p-text font-bold text-2xl">
+                Event capacity Reached
+              </div>
+            </div>
           ) : (
             <button
-              onClick={attestAttendingEvent}
+              onClick={async () => {
+                await toast.promise(attestAttendingEvent(), {
+                  loading: 'Attesting...',
+                  success: 'Successfully signed up!',
+                  error: 'Failed to sign up!'
+                })
+              }}
               className="bg-p-text/90 border-none disabled:bg-s-text hover:bg-p-text transition-all cursor-pointer rounded-xl px-4 py-3 center-row"
             >
               <div className="-mb-1 mr-3">
@@ -311,9 +317,7 @@ const SignUpPage = ({ params }: { params: { id: string } }) => {
 
       {/* list of attestors */}
       <div className="p-4 bg-p-bg/50 backdrop-opacity-10  backdrop-blur-xl rounded-xl shadow-2xl">
-        <div className="text-2xl text-p-text/80 font-bold">
-          Signed Up Attendees
-        </div>
+        <div className="text-2xl text-p-text/80 font-bold">Signed Up By</div>
         <div className="grid grid-cols-1 gap-4 mt-4">
           {attendingAttestations?.attestations.map((attestation) => (
             <div
