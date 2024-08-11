@@ -28,7 +28,7 @@ import { ethers } from 'ethers'
 import useInfoBasedOnChain from '../../utils/hooks/useInfoBasedOnChain'
 import { useRouter } from 'next/navigation'
 import { sleep } from '../../utils/helpers'
-import { EventResolverAbi } from '../../utils/contracts/eventResolverAbi'
+import { EventResolverAbi } from '../../utils/contracts/EventResolverAbi'
 import { EventResolverByteCode } from '../../utils/contracts/EventResolverByteCode'
 
 export default function CreateEventPage() {
